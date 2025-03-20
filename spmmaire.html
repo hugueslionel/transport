@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sommaire</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('fond/fond.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .image {
+            position: absolute;
+            width: 150px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <img src="air/avion.png" class="image" id="avion" style="top: 20%; left: 10%;" onclick="location.href='avion.html';">
+    <img src="mer/bateau.png" class="image" id="bateau" style="top: 40%; left: 30%;" onclick="location.href='bateau.html';">
+    <img src="terre/voiture.png" class="image" id="voiture" style="top: 60%; left: 50%;" onclick="location.href='voiture.html';">
+    
+    <script>
+        document.querySelectorAll('.image').forEach(img => {
+            img.onmousedown = function(event) {
+                let shiftX = event.clientX - img.getBoundingClientRect().left;
+                let shiftY = event.clientY - img.getBoundingClientRect().top;
+                
+                function moveAt(pageX, pageY) {
+                    img.style.left = pageX - shiftX + 'px';
+                    img.style.top = pageY - shiftY + 'px';
+                }
+                
+                function onMouseMove(event) {
+                    moveAt(event.pageX, event.pageY);
+                }
+                
+                document.addEventListener('mousemove', onMouseMove);
+                
+                img.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    img.onmouseup = null;
+                };
+            };
+            
+            img.ondragstart = () => false;
+        });
+    </script>
+</body>
+</html>
