@@ -1,1 +1,277 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice de classement - Avion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f8ff;
+        }
+        
+        header {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+        }
+        
+        .source-container {
+            width: 200px;
+            height: 200px;
+            border: 3px dashed #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: white;
+        }
+        
+        .source-container img {
+            max-width: 180px;
+            max-height: 180px;
+            cursor: move;
+        }
+        
+        .zones-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .zone {
+            width: 30%;
+            height: 300px;
+            border: 2px solid #2c3e50;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        
+        .zone h3 {
+            width: 100%;
+            text-align: center;
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .progress {
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .dragged-image {
+            max-width: 80px;
+            max-height: 80px;
+            margin: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .correct {
+            border: 2px solid green;
+        }
+        
+        .incorrect {
+            border: 2px solid red;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .return-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .return-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .completion-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Exercice de classement</h1>
+    </header>
+    
+    <div class="container">
+        <div class="source-container" id="source">
+            <!-- L'image actuelle apparaîtra ici -->
+        </div>
+        
+        <div class="zones-container">
+            <div class="zone" id="zone1">
+                <h3>Zone 1</h3>
+            </div>
+            <div class="zone" id="zone2">
+                <h3>Zone 2</h3>
+            </div>
+            <div class="zone" id="zone3">
+                <h3>Zone 3</h3>
+            </div>
+        </div>
+        
+        <div class="progress">
+            <p>Progression: <span id="progress-text">0/18</span></p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="completion-message" id="completion-message">
+            Félicitations ! Vous avez terminé l'exercice avec succès !
+        </div>
+        
+        <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
+    </div>
+    
+    <script>
+        // Configuration des images et zones correctes
+        const totalImages = 18;
+        let currentImageIndex = 1;
+        let correctCount = 0;
+        
+        // Définir les zones correctes pour chaque image
+        const correctZones = {
+            1: "zone1", 5: "zone1", 9: "zone1", 12: "zone1", 13: "zone1", 17: "zone1",
+            2: "zone2", 4: "zone2", 7: "zone2", 10: "zone2", 15: "zone2", 18: "zone2",
+            3: "zone3", 6: "zone3", 8: "zone3", 11: "zone3", 14: "zone3", 16: "zone3"
+        };
+        
+        // Afficher la première image au chargement
+        document.addEventListener("DOMContentLoaded", function() {
+            loadNextImage();
+        });
+        
+        // Charger l'image suivante
+        function loadNextImage() {
+            if (currentImageIndex <= totalImages) {
+                const source = document.getElementById("source");
+                source.innerHTML = '';
+                
+                const img = document.createElement("img");
+                img.src = `classer/im${currentImageIndex}.png`;
+                img.id = `image${currentImageIndex}`;
+                img.draggable = true;
+                
+                // Gérer le début du glisser-déposer
+                img.addEventListener("dragstart", function(event) {
+                    event.dataTransfer.setData("text", event.target.id);
+                });
+                
+                source.appendChild(img);
+                updateProgress();
+            } else {
+                // Toutes les images ont été traitées
+                document.getElementById("completion-message").style.display = "block";
+            }
+        }
+        
+        // Permettre le dépôt dans les zones
+        document.querySelectorAll(".zone").forEach(function(zone) {
+            zone.addEventListener("dragover", function(event) {
+                event.preventDefault();
+            });
+            
+            zone.addEventListener("drop", function(event) {
+                event.preventDefault();
+                const imageId = event.dataTransfer.getData("text");
+                const imageElement = document.getElementById(imageId);
+                const imageNumber = parseInt(imageId.replace("image", ""));
+                
+                // Vérifier si c'est la bonne zone
+                if (correctZones[imageNumber] === zone.id) {
+                    // Correct - placer l'image dans la zone
+                    const clonedImage = imageElement.cloneNode(true);
+                    clonedImage.classList.add("dragged-image");
+                    clonedImage.classList.add("correct");
+                    clonedImage.draggable = false;
+                    zone.appendChild(clonedImage);
+                    
+                    // Passer à l'image suivante
+                    currentImageIndex++;
+                    correctCount++;
+                    loadNextImage();
+                } else {
+                    // Incorrect - animation d'erreur
+                    imageElement.classList.add("incorrect");
+                    setTimeout(() => {
+                        imageElement.classList.remove("incorrect");
+                    }, 500);
+                }
+            });
+        });
+        
+        // Mettre à jour la barre de progression
+        function updateProgress() {
+            const progressText = document.getElementById("progress-text");
+            const progressFill = document.getElementById("progress-fill");
+            
+            progressText.textContent = `${correctCount}/18`;
+            const progressPercentage = (correctCount / totalImages) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+        }
+    </script>
+</body>
+</html>
