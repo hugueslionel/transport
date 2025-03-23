@@ -209,6 +209,7 @@
                 // Gérer le début du glisser-déposer
                 img.addEventListener("dragstart", function(event) {
                     event.dataTransfer.setData("text", event.target.id);
+                    event.dataTransfer.setDragImage(img, 0, 0);
                 });
                 
                 source.appendChild(img);
