@@ -70,33 +70,10 @@
             overflow-y: auto;
         }
         
-        .zone h3 {
-            width: 100%;
-            text-align: center;
-            margin-top: 0;
-            color: #2c3e50;
-        }
-        
-        .progress {
-            width: 100%;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #ecf0f1;
-            border-radius: 10px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background-color: #2ecc71;
-            width: 0%;
-            transition: width 0.5s;
+        .zone img {
+            max-width: 80%;
+            max-height: 80px;
+            margin: 5px;
         }
         
         .dragged-image {
@@ -162,25 +139,14 @@
         
         <div class="zones-container">
             <div class="zone" id="zone1">
-                <h3>Zone 1</h3>
+                <img src="classer/trotti.png">
             </div>
             <div class="zone" id="zone2">
-                <h3>Zone 2</h3>
+                <img src="classer/drone.png">
             </div>
             <div class="zone" id="zone3">
-                <h3>Zone 3</h3>
+                <img src="classer/planche.png">
             </div>
-        </div>
-        
-        <div class="progress">
-            <p>Progression: <span id="progress-text">0/18</span></p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-        </div>
-        
-        <div class="completion-message" id="completion-message">
-            Félicitations ! Vous avez terminé l'exercice avec succès !
         </div>
         
         <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
@@ -221,7 +187,6 @@
                 });
                 
                 source.appendChild(img);
-                updateProgress();
             } else {
                 // Toutes les images ont été traitées
                 document.getElementById("completion-message").style.display = "block";
@@ -262,16 +227,6 @@
                 }
             });
         });
-        
-        // Mettre à jour la barre de progression
-        function updateProgress() {
-            const progressText = document.getElementById("progress-text");
-            const progressFill = document.getElementById("progress-fill");
-            
-            progressText.textContent = `${correctCount}/18`;
-            const progressPercentage = (correctCount / totalImages) * 100;
-            progressFill.style.width = `${progressPercentage}%`;
-        }
     </script>
 </body>
 </html>
