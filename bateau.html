@@ -140,7 +140,13 @@
             { id: 'vehicle2', emoji: '🚂', name: 'train', progress: 0, maxProgress: 5 },
             { id: 'vehicle3', emoji: '✈️', name: 'avion', progress: 0, maxProgress: 5 }
         ];
-        
+        // Fonction pour mélanger un tableau
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Échange des éléments
+    }
+}
         // Questions et réponses
         const questions = [
             { text: "Je roule sur la route. Qui suis-je ?", answer: "voiture" },
@@ -159,6 +165,8 @@
             { text: "Je fais \"tchou-tchou\". Qui suis-je ?", answer: "train" },
             { text: "Je vole au-dessus des nuages. Qui suis-je ?", answer: "avion" }
         ];
+        // Mélanger les questions
+        shuffleArray(questions);
         
         let currentQuestionIndex = 0;
         let gameOver = false;
