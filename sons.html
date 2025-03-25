@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sons des Transports</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #e6f3ff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0066cc;
+            font-size: 28px;
+        }
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .transport-item {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 40px;
+        }
+        .transport-item:hover {
+            background-color: #45a049;
+        }
+        .sound-controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .play-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .play-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .score {
+            font-size: 20px;
+            margin: 15px 0;
+            color: #333;
+        }
+        .feedback {
+            font-size: 24px;
+            margin: 15px 0;
+            height: 30px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .return-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .return-button:hover {
+            background-color: #2980b9;
+        }
+        .restart-button {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Sons des Transports</h1>
+        
+        <div class="sound-controls">
+            <button class="play-button" id="playSound">Jouer le son</button>
+        </div>
+        
+        <div class="feedback" id="feedbackMessage"></div>
+        
+        <div class="score">Score : <span id="scoreValue">0</span> / 10</div>
+        
+        <div class="transport-grid" id="transportGrid"></div>
+        
+        <button class="restart-button" onclick="restartGame()">Recommencer</button>
+        
+        <br>
+        <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
+    </div>
 
+    <script>
+        const sounds = [
+            {
+                name: '🚗',
+                src: 'car-horn.mp3',
+                description: 'Klaxon de voiture'
+            },
+            {
+                name: '🚌',
+                src: 'bus-door.mp3',
+                description: 'Ouverture de porte de bus'
+            },
+            {
+                name: '🚂',
+                src: 'train-whistle.mp3',
+                description: 'Sifflet de train'
+            },
+            {
+                name: '✈️',
+                src: 'airplane-takeoff.mp3',
+                description: 'Décollage d\'avion'
+            },
+            {
+                name: '🚢',
+                src: 'ship-horn.mp3',
+                description: 'Sirène de bateau'
+            },
+            {
+                name: '🚁',
+                src: 'helicopter-rotor.mp3',
+                description: 'Hélice d\'hélicoptère'
+            },
+            {
+                name: '🚲',
+                src: 'bicycle-bell.mp3',
+                description: 'Sonnette de vélo'
+            },
+            {
+                name: '🚜',
+                src: 'tractor-engine.mp3',
+                description: 'Moteur de tracteur'
+            },
+            {
+                name: '🚀',
+                src: 'rocket-launch.mp3',
+                description: 'Lancement de fusée'
+            },
+            {
+                name: '🚕',
+                src: 'taxi-engine.mp3',
+                description: 'Moteur de taxi'
+            }
+        ];
+
+        let currentRound = 0;
+        let score = 0;
+        let currentSound = null;
+        let availableSounds = [];
+        let audio = null;
+
+        function initGame() {
+            availableSounds = [...sounds];
+            currentRound = 0;
+            score = 0;
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('feedbackMessage').textContent = '';
+            setupRound();
+        }
+
+        function setupRound() {
+            if (currentRound >= 10) {
+                endGame();
+                return;
+            }
+
+            const transportGrid = document.getElementById('transportGrid');
+            transportGrid.innerHTML = '';
+
+            // Sélectionner le son à deviner
+            const randomIndex = Math.floor(Math.random() * availableSounds.length);
+            currentSound = availableSounds.splice(randomIndex, 1)[0];
+
+            // Créer un tableau de 4 transports avec le bon transport
+            const options = [currentSound];
+            while (options.length < 4) {
+                const randomTransport = sounds[Math.floor(Math.random() * sounds.length)];
+                if (!options.some(opt => opt.name === randomTransport.name)) {
+                    options.push(randomTransport);
+                }
+            }
+
+            // Mélanger les options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            // Créer les boutons de transport
+            options.forEach(transport => {
+                const button = document.createElement('button');
+                button.className = 'transport-item';
+                button.textContent = transport.name;
+                button.addEventListener('click', () => checkAnswer(transport));
+                transportGrid.appendChild(button);
+            });
+
+            // Préparer et jouer le son
+            const playSoundButton = document.getElementById('playSound');
+            playSoundButton.disabled = false;
+            playSoundButton.addEventListener('click', playCurrentSound);
+        }
+
+        function playCurrentSound() {
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            audio = new Audio(currentSound.src);
+            audio.play();
+        }
+
+        function checkAnswer(selectedTransport) {
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            
+            if (selectedTransport.name === currentSound.name) {
+                score++;
+                document.getElementById('scoreValue').textContent = score;
+                feedbackMessage.textContent = 'Bravo ! Bonne réponse 👏';
+                feedbackMessage.className = 'feedback correct';
+            } else {
+                feedbackMessage.textContent = 'Désolé, ce n\'est pas le bon transport 😔';
+                feedbackMessage.className = 'feedback incorrect';
+            }
+
+            currentRound++;
+            setTimeout(setupRound, 1500);
+        }
+
+        function endGame() {
+            const transportGrid = document.getElementById('transportGrid');
+            transportGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center;">
+                    <h2>Jeu terminé !</h2>
+                    <p>Votre score : ${score} / 10</p>
+                </div>
+            `;
+            document.getElementById('playSound').disabled = true;
+            document.getElementById('feedbackMessage').textContent = '';
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+        // Démarrer le jeu au chargement
+        window.onload = initGame;
+    </script>
+</body>
+</html>
