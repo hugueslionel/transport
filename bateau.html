@@ -102,6 +102,19 @@
             margin-top: 10px;
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
+        .return-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .return-button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -132,6 +145,10 @@
     <div class="success-message" id="successMessage">Bravo ! Tu as fait gagner tous les véhicules !</div>
     
     <button class="reset-button" onclick="resetGame()">Nouvelle Course</button>
+    </div>
+        
+        <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
+    </div>
     
     <script>
         // Configuration du jeu
