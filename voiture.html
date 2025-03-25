@@ -94,6 +94,19 @@
         .card-back .card-content {
             font-size: 40px;
         }
+        .return-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .return-button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -104,7 +117,11 @@
         <div class="memory-grid" id="memoryGrid"></div>
         <div class="success-message" id="successMessage">Bravo ! Tu as trouvé toutes les paires !</div>
         <button class="reset-button" onclick="resetGame()">Nouvelle partie</button>
+        <br>
+        <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
     </div>
+    
+   
     
     <script>
         // Configuration du jeu
