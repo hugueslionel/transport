@@ -18,11 +18,11 @@
         }
         .game-container {
             margin: 20px auto;
-            max-width: 600px;
+            max-width: 800px;
         }
         .memory-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             grid-gap: 10px;
             margin-top: 20px;
         }
@@ -113,7 +113,7 @@
     <h1>Mémory des Transports</h1>
     
     <div class="game-container">
-        <div class="score">Paires trouvées : <span id="pairs">0</span> / 6</div>
+        <div class="score">Paires trouvées : <span id="pairs">0</span> / 9</div>
         <div class="memory-grid" id="memoryGrid"></div>
         <div class="success-message" id="successMessage">Bravo ! Tu as trouvé toutes les paires !</div>
         <button class="reset-button" onclick="resetGame()">Nouvelle partie</button>
@@ -121,12 +121,10 @@
         <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
     </div>
     
-   
-    
     <script>
-        // Configuration du jeu
+        // Configuration du jeu avec 9 paires de transports
         const transports = [
-            '🚗', '🚌', '🚂', '✈️', '🚢', '🚁'
+            '🚗', '🚌', '🚂', '✈️', '🚢', '🚁', '🚲', '🚜', '🚀'
         ];
         
         let cards = [];
