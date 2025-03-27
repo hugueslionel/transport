@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révélation du Puzzle</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .puzzle-container {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            margin-top: 20px;
+        }
+        #puzzleImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #revealLayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            cursor: crosshair;
+        }
+        .return-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .return-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="puzzle-container">
+        <img id="puzzleImage" src="classr/puzzle.jpg" alt="Puzzle Image">
+        <div id="revealLayer"></div>
+    </div>
 
+    <button class="return-button" onclick="window.location.href='index.html'">Retour à l'accueil</button>
+
+    <script>
+        const revealLayer = document.getElementById('revealLayer');
+        const puzzleImage = document.getElementById('puzzleImage');
+
+        // Créer un canvas pour le masquage
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Configurer la taille du canvas identique à l'image
+        canvas.width = puzzleImage.width;
+        canvas.height = puzzleImage.height;
+
+        // Initialiser le canvas avec un fond noir complet
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        revealLayer.addEventListener('mousemove', function(e) {
+            // Obtenir les coordonnées relatives à l'élément
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const width = rect.width;
+            const height = rect.height;
+
+            // Calculer la position proportionnelle
+            const propX = x / width;
+            const propY = y / height;
+
+            // Créer un effet de révélation circulaire
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(
+                propX * canvas.width, 
+                propY * canvas.height, 
+                50,  // Taille du cercle de révélation
+                0, 
+                Math.PI * 2
+            );
+            ctx.fill();
+
+            // Mettre à jour le calque de révélation
+            revealLayer.style.backgroundImage = `url(${canvas.toDataURL()})`;
+        });
+
+        // S'assurer que le canvas se met à jour lors du chargement de l'image
+        puzzleImage.onload = function() {
+            canvas.width = this.width;
+            canvas.height = this.height;
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            revealLayer.style.backgroundImage = `url(${canvas.toDataURL()})`;
+        };
+    </script>
+</body>
+</html>
