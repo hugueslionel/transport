@@ -36,7 +36,7 @@
             width: 100%;
             height: 100%;
             background-color: black;
-            cursor: crosshair;
+            cursor: pointer;
         }
         .return-button {
             margin-top: 20px;
@@ -56,7 +56,7 @@
 </head>
 <body>
     <div class="puzzle-container">
-        <img id="puzzleImage" src="classr/puzzle.jpg" alt="Puzzle Image">
+        <img id="puzzleImage" src="puzzle.jpg" alt="Puzzle Image">
         <div id="revealLayer"></div>
     </div>
 
@@ -70,15 +70,28 @@
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Configurer la taille du canvas identique à l'image
-        canvas.width = puzzleImage.width;
-        canvas.height = puzzleImage.height;
+        // Variable pour suivre le nombre de clics
+        let clickCount = 0;
+        const maxClicks = 10; // Nombre de clics nécessaires pour tout révéler
 
-        // Initialiser le canvas avec un fond noir complet
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Initialisation du canvas
+        function initCanvas() {
+            canvas.width = puzzleImage.naturalWidth;
+            canvas.height = puzzleImage.naturalHeight;
+            
+            // Remplir completement en noir
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Mettre à jour le style du calque
+            revealLayer.style.backgroundImage = `url(${canvas.toDataURL()})`;
+            revealLayer.style.backgroundSize = 'cover';
+        }
 
-        revealLayer.addEventListener('mousemove', function(e) {
+        // Révéler une partie au clic
+        revealLayer.addEventListener('click', function(e) {
+            if (clickCount >= maxClicks) return;
+
             // Obtenir les coordonnées relatives à l'élément
             const rect = this.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -90,13 +103,13 @@
             const propX = x / width;
             const propY = y / height;
 
-            // Créer un effet de révélation circulaire
+            // Révéler avec un effet circulaire
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
             ctx.arc(
                 propX * canvas.width, 
                 propY * canvas.height, 
-                50,  // Taille du cercle de révélation
+                canvas.width / (maxClicks * 2),  // Taille du cercle grandissant
                 0, 
                 Math.PI * 2
             );
@@ -104,16 +117,23 @@
 
             // Mettre à jour le calque de révélation
             revealLayer.style.backgroundImage = `url(${canvas.toDataURL()})`;
+            
+            // Incrémenter le compteur de clics
+            clickCount++;
+
+            // Si tous les clics sont utilisés, enlever completement le calque
+            if (clickCount >= maxClicks) {
+                revealLayer.style.display = 'none';
+            }
         });
 
         // S'assurer que le canvas se met à jour lors du chargement de l'image
-        puzzleImage.onload = function() {
-            canvas.width = this.width;
-            canvas.height = this.height;
-            ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            revealLayer.style.backgroundImage = `url(${canvas.toDataURL()})`;
-        };
+        puzzleImage.onload = initCanvas;
+
+        // Initialiser manuellement si l'image est déjà chargée
+        if (puzzleImage.complete) {
+            initCanvas();
+        }
     </script>
 </body>
 </html>
