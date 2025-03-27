@@ -37,7 +37,7 @@
             height: 100%;
             background-color: black;
             cursor: pointer;
-            clip-path: circle(0% at 50% 50%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
             transition: clip-path 0.3s ease;
         }
         .return-button {
@@ -58,7 +58,7 @@
 </head>
 <body>
     <div class="puzzle-container">
-        <img id="puzzleImage" src="classer/puzzle.jpg" alt="Puzzle Image">
+        <img id="puzzleImage" src="puzzle.jpg" alt="Puzzle Image">
         <div id="revealLayer"></div>
     </div>
 
@@ -74,11 +74,11 @@
         puzzleContainer.addEventListener('click', function(e) {
             if (clickCount >= maxClicks) return;
 
-            // Calculer le pourcentage de révélation
-            const revealPercentage = ((clickCount + 1) / maxClicks) * 100;
+            // Calculer le pourcentage de révélation inverse
+            const revealPercentage = 100 - ((clickCount + 1) / maxClicks) * 100;
 
-            // Utiliser clip-path pour révéler l'image
-            revealLayer.style.clipPath = `circle(${revealPercentage}% at ${e.offsetX / this.offsetWidth * 100}% ${e.offsetY / this.offsetHeight * 100}%)`;
+            // Utiliser clip-path pour cacher progressivement le noir
+            revealLayer.style.clipPath = `polygon(0 0, 100% 0, 100% ${revealPercentage}%, 0 ${revealPercentage}%)`;
             
             clickCount++;
 
