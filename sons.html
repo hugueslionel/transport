@@ -193,7 +193,9 @@
                 description: 'Sirène de camion de pompier'
             },
             {
-                name: '<img src="mer/sousmarin.png">',
+                name: 'sousmarin',  // Un identifiant simple
+                type: 'image',      // Pour indiquer que c'est une image
+                imageSrc: 'mer/sousmarin.png',  // Chemin vers l'image
                 src: 'bruits/sousmarin.mp3',
                 description: 'Sonar de sous-marin'
             },
@@ -248,13 +250,26 @@
             }
 
             // Créer les boutons de transport
-            options.forEach(transport => {
-                const button = document.createElement('button');
-                button.className = 'transport-item';
-                button.textContent = transport.name;
-                button.addEventListener('click', () => checkAnswer(transport));
-                transportGrid.appendChild(button);
-            });
+options.forEach(transport => {
+    const button = document.createElement('button');
+    button.className = 'transport-item';
+    
+    // Si c'est une image
+    if (transport.type === 'image') {
+        const img = document.createElement('img');
+        img.src = transport.imageSrc;
+        img.alt = transport.description;
+        img.width = 40;
+        img.height = 40;
+        button.appendChild(img);
+    } else {
+        // Sinon c'est un emoji
+        button.textContent = transport.name;
+    }
+    
+    button.addEventListener('click', () => checkAnswer(transport));
+    transportGrid.appendChild(button);
+});
 
             // Préparer et jouer le son
             const playSoundButton = document.getElementById('playSound');
@@ -273,7 +288,7 @@
 
         function checkAnswer(selectedTransport) {
             const feedbackMessage = document.getElementById('feedbackMessage');
-            
+    
             if (selectedTransport.name === currentSound.name) {
                 score++;
                 document.getElementById('scoreValue').textContent = score;
